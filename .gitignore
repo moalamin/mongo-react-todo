@@ -1,0 +1,3 @@
+*.spw
+/node_modules
+config.js
