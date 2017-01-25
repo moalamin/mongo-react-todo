@@ -1,3 +1,4 @@
-*.spw
+*.swo
+*.swp
 /node_modules
 config.js
