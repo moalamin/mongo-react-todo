@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
-app.get('/index', function (req, res) {
+app.get('api/index', function (req, res) {
   TodoList.find({}, function (err, todoLists) {
     if (err) {
       res.json(err);
@@ -25,7 +25,7 @@ app.get('/index', function (req, res) {
   });
 });
 
-app.get('/find/:id', function (req, res) {
+app.get('api/find/:id', function (req, res) {
   console.log(req);
   TodoList.find({_id: req.params.id}, function (err, todoList) {
     if (err) {
@@ -36,7 +36,7 @@ app.get('/find/:id', function (req, res) {
   });
 });
 
-app.post('/create_list', function (req, res) {
+app.post('api/create_list', function (req, res) {
   var todoList = new TodoList({
     name: req.params.name,
     items: []
@@ -51,7 +51,7 @@ app.post('/create_list', function (req, res) {
   });
 });
 
-app.delete('/delete_list/:id', function (req, res) {
+app.delete('api/delete_list/:id', function (req, res) {
   TodoList.findByIdAndRemove(req.params.id, function (err, todoList) {
     if (err) {
       res.json(err);
