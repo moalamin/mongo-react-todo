@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './App.css';
-import Navigation from './components/Navigation.jsx';
+import Navigation from './components/Navigation';
 
-class App extends Component {
+class App extends React.Component {
   render() {
     return (
       <div className="App">
