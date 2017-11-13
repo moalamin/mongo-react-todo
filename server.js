@@ -1,22 +1,21 @@
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-var morgan = require('morgan');
-var mongoose = require('mongoose');
-var config = require('./config');
-var Todo = require('./models/Todo.js');
-var TodoList = require('./models/TodoList.js');
+const express = require('express');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const config = require('./config')[process.env.NODE_ENV];
+const Todo = require('./models/Todo.js');
+const TodoList = require('./models/TodoList.js');
 
-var port = process.env.PORT || 4000;
-mongoose.connect(config.db);
+const app = express();
+const port = process.env.PORT || 4000;
 
 // middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
-app.get('api/index', function (req, res) {
-  TodoList.find({}, function (err, todoLists) {
+app.get('/api/index', (req, res) => {
+  TodoList.find({}, (err, todoLists) => {
     if (err) {
       res.json(err);
     } else {
@@ -25,9 +24,9 @@ app.get('api/index', function (req, res) {
   });
 });
 
-app.get('api/find/:id', function (req, res) {
+app.get('/api/find/:id', (req, res) => {
   console.log(req);
-  TodoList.find({_id: req.params.id}, function (err, todoList) {
+  TodoList.find({_id: req.params.id}, (err, todoList) => {
     if (err) {
       res.json(err);
     } else {
@@ -36,13 +35,14 @@ app.get('api/find/:id', function (req, res) {
   });
 });
 
-app.post('api/create_list', function (req, res) {
-  var todoList = new TodoList({
-    name: req.params.name,
+app.post('/api/create_list', (req, res) => {
+  console.log(req.body);
+  const todoList = new TodoList({
+    name: req.body.name,
     items: []
   });
 
-  todoList.save(function (err, currentList) {
+  todoList.save( (err, currentList) => {
     if (err) {
       res.json(err);
     } else {
@@ -51,8 +51,24 @@ app.post('api/create_list', function (req, res) {
   });
 });
 
-app.delete('api/delete_list/:id', function (req, res) {
-  TodoList.findByIdAndRemove(req.params.id, function (err, todoList) {
+app.post('/api/add_item/:todo_list_id/', (req, res) => {
+  console.log('now creating a list... ');
+  console.log(req.body);
+  let todoList = TodoList.findOne({
+    id: req.params.id
+  })
+
+  todoList.save( (err, currentList) => {
+    if (err) {
+      res.json(err);
+    } else {
+      res.json(currentList);
+    }
+  });
+});
+
+app.delete('/api/delete_list/:id', (req, res) => {
+  TodoList.findByIdAndRemove(req.params.id,(err, todoList) => {
     if (err) {
       res.json(err);
     } else {
@@ -61,6 +77,11 @@ app.delete('api/delete_list/:id', function (req, res) {
   });
 });
 
-app.listen(port, function () {
-  console.log('App is running on port: ' + port);
+
+//connect to db then express listen
+mongoose.connect(config.db, () => {
+  console.log("CONNECTED TO MONGO")
+  app.listen(port, () => {
+    console.log('App is running on port: ' + port);
+  });
 });
